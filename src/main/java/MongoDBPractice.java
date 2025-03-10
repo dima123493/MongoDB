@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 
 public class MongoDBPractice {
     public static void main(String[] args) {
-        MongoClient connectionToMongoDB = MongoDBClient.establishConnectionToMongoDB("<your connection string here>");
+        MongoClient connectionToMongoDB = MongoDBClient.establishConnectionToMongoDB("<connection string uri>");
 
         insertOne();
         insertMany(listOfDocuments().toArray(new Document[0]));
