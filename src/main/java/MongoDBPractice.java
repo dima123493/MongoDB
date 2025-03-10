@@ -1,3 +1,4 @@
+import com.mongodb.bulk.BulkWriteResult;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
@@ -145,6 +146,30 @@ public class MongoDBPractice {
                 Projections.computed("fieldName", new Document("$field", asList("$field", 100))), Projections.excludeId()));
         MongoDBClient.getCollectionFromDatabase("myAtlasClusterEDU", "library")
                 .aggregate(asList(matchStage, sortStage, projectStage)).forEach(doc -> System.out.println(doc.toJson()));
+    }
+
+    public static void replace() {
+        Bson query = eq("title", "Music of the Heart");
+        Document replaceDocument = new Document().
+                append("title", "50 Violins").
+                append("fullplot", " A dramatization of the true story of Roberta Guaspari who co-founded the Opus 118 Harlem School of Music");
+        ReplaceOptions opts = new ReplaceOptions().upsert(true);
+        UpdateResult result = MongoDBClient.getCollectionFromDatabase("myAtlasClusterEDU", "library").replaceOne(query, replaceDocument, opts);
+    }
+
+    public static void bulkOperations() {
+        BulkWriteResult result = MongoDBClient.getCollectionFromDatabase("myAtlasClusterEDU", "library").bulkWrite(
+                Arrays.asList(
+                        new InsertOneModel<>(new Document("name", "A Sample Movie")),
+                        new InsertOneModel<>(new Document("name", "Another Sample Movie")),
+                        new InsertOneModel<>(new Document("name", "Yet Another Sample Movie")),
+                        new UpdateOneModel<>(new Document("name", "A Sample Movie"),
+                                new Document("$set", new Document("name", "An Old Sample Movie")),
+                                new UpdateOptions().upsert(true)),
+                        new DeleteOneModel<>(new Document("name", "Yet Another Sample Movie")),
+                        new ReplaceOneModel<>(new Document("name", "Yet Another Sample Movie"),
+                                new Document("name", "The Other Sample Movie").append("runtime", "42"))
+                ));
     }
 
 }
